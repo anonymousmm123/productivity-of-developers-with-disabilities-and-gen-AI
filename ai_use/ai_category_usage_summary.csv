@@ -1,0 +1,9 @@
+category,before_users,after_users,both_users,total_users
+bing,1,0,0,1
+chatgpt,9,9,2,16
+claude,5,14,3,16
+copilot,2,5,0,7
+gemini,3,7,2,8
+general_ai,3,6,1,8
+grok,0,2,0,2
+other_tools,0,0,0,0

@@ -1,0 +1,4 @@
+activity_before,count
+<25,0
+25-100,1
+>100,0

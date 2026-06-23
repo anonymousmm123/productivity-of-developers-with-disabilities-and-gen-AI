@@ -1,0 +1,2 @@
+total_users,ai_users,percent_ai,mean_before,mean_after,median_before,median_after,median_first_seen,earliest_first_seen,latest_first_seen
+71,15,21.12676056338028,0.0034476712142458336,0.05515422466909174,0.0,0.0109034267912772,2025-03-10 18:05:09+00:00,2024-03-24 16:28:48+00:00,2025-12-09 22:35:34+00:00
