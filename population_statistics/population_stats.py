@@ -10,6 +10,23 @@ color_before = "#FFD166"
 color_after = "#EF476F"
 color_change = "#06D6A0"
 
+keyword_to_category = {
+    "deaf": "Physical",
+
+    "dyscalculia": "Non-Physical",
+    "dyslexia": "Non-Physical",
+    "adhd": "Non-Physical",
+    "autism": "Non-Physical",
+    "asd": "Non-Physical",
+    "audhd": "Non-Physical",
+
+    "visually impaired": "Visual",
+    "blind": "Visual",
+    "legally blind": "Visual",
+
+    "disabled": "Disabled"
+}
+
 #median before vs after for commits and net lines
 def compute_stats(df, before_col, after_col, output_csv, chart_file, title, ylabel):
     stats_before = df.groupby("keyword")[before_col].median()
@@ -108,6 +125,110 @@ def compute_acceptance_rate(df, before_col, after_col, output_csv, chart_file, t
     plt.legend()
     plt.tight_layout()
     plt.savefig(chart_file)
+    plt.show()
+
+def create_nested_piechart(dist_df):
+    import matplotlib.colors as mcolors
+
+    nested_df = dist_df[dist_df["users"] > 0].copy()
+
+    nested_df["category"] = nested_df["keyword"].map(
+        keyword_to_category
+    )
+
+    nested_df = nested_df.dropna(subset=["category"])
+
+    category_totals = (
+        nested_df.groupby("category")["users"]
+        .sum()
+        .sort_values(ascending=False)
+    )
+
+    inner_labels = category_totals.index.tolist()
+    inner_sizes = category_totals.values.tolist()
+
+    category_colors = {
+        "Non-Physical": "#06D6A0",
+        "Physical": "#118AB2",
+        "Visual": "#9B5DE5",
+        "Disabled": "#EF476F",
+        "Non-Disabled": "#FFD166"
+    }
+
+    inner_colors = [
+        category_colors.get(cat, "#CCCCCC")
+        for cat in inner_labels
+    ]
+
+    outer_sizes = []
+    outer_labels = []
+    outer_colors = []
+
+    for category in inner_labels:
+
+        base_color = category_colors[category]
+
+        disabilities = nested_df[
+            nested_df["category"] == category
+        ].sort_values("users", ascending=False)
+
+        rgb = mcolors.to_rgb(base_color)
+
+        n = len(disabilities)
+
+        for i, (_, row) in enumerate(disabilities.iterrows()):
+
+            outer_labels.append(row["keyword"])
+            outer_sizes.append(row["users"])
+
+            factor = 0.35 + (i / max(n - 1, 1)) * 0.55
+
+            shade = tuple(
+                c * factor + (1 - factor)
+                for c in rgb
+            )
+
+            outer_colors.append(shade)
+
+    fig, ax = plt.subplots(figsize=(12, 12))
+
+    ax.pie(
+        outer_sizes,
+        radius=1.3,
+        labels=outer_labels,
+        colors=outer_colors,
+        labeldistance=1.05,
+        wedgeprops=dict(
+            width=0.35,
+            edgecolor="white"
+        )
+    )
+
+    ax.pie(
+        inner_sizes,
+        radius=0.95,
+        labels=inner_labels,
+        colors=inner_colors,
+        labeldistance=0.6,
+        textprops={"weight": "bold"},
+        wedgeprops=dict(
+            width=0.35,
+            edgecolor="white"
+        )
+    )
+
+    plt.title(
+        f"Nested Distribution of Categories and Disabilities\n(Total Users = {nested_df['users'].sum()})"
+    )
+
+    plt.tight_layout()
+
+    plt.savefig(
+        "nested_disability_distribution.png",
+        dpi=300,
+        bbox_inches="tight"
+    )
+
     plt.show()
 
 def main():
@@ -245,6 +366,8 @@ def main():
     plt.tight_layout()
     plt.savefig("disability_distribution_pie_chart.png", dpi=300, bbox_inches="tight", pad_inches=0.2)
     plt.show()
+
+    create_nested_piechart(dist_df)
 
     
 
