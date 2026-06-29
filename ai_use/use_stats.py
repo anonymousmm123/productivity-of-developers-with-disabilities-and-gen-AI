@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 
 def main():
 
-    #df = pd.read_csv("github_users_with_ai_signals.csv")
-    df = pd.read_csv("non_disabled_github_users_with_ai_signals.csv")
+    df = pd.read_csv("github_users_with_ai_signals.csv")
+    #df = pd.read_csv("non_disabled_github_users_with_ai_signals.csv")
     df["ai_first_seen"] = pd.to_datetime(df["ai_first_seen"], errors="coerce")
 
     df["used_ai"] = (
@@ -126,11 +126,34 @@ def main():
 
     legend_labels = [f"{label}: {size} ({size/total:.1%})" for label, size in zip(labels, sizes)]
     plt.figure(figsize=(10,10))
-    wedges, _, autotexts = plt.pie(sizes, startangle=90, colors=colors[:len(labels)], autopct=make_autopct(sizes), pctdistance=0.75, textprops={"color": "black"}, wedgeprops={"alpha": 1})
-    plt.legend(wedges, legend_labels, title="AI Tool Categories", loc="center left", bbox_to_anchor=(1, 0.5))
+
+    wedges, _, autotexts = plt.pie(
+        sizes,
+        startangle=90,
+        colors=colors[:len(labels)],
+        autopct=make_autopct(sizes),
+        pctdistance=0.75,
+        textprops={"color": "black", "fontsize": 14},
+        wedgeprops={"alpha": 1}
+    )
+
+    for autotext in autotexts:
+        autotext.set_fontsize(13)
+        autotext.set_weight("bold")
+
+    plt.legend(
+        wedges,
+        legend_labels,
+        title="AI Tool Categories",
+        loc="center left",
+        bbox_to_anchor=(1, 0.5),
+        fontsize=13,
+        title_fontsize=13
+    )
+
     plt.title("AI Tool Usage Distribution (by unique users)")
     plt.tight_layout()
-    plt.savefig("non_disabled_ai_tool_usage_distribution_pie_chart.png", dpi=300, bbox_inches="tight", pad_inches=0.2)
+    plt.savefig("ai_tool_usage_distribution_pie_chart.png", dpi=300, bbox_inches="tight", pad_inches=0.2)
     plt.show()
 
     mention_cols = [col for col in df.columns if col.startswith("mentions_")]
@@ -141,15 +164,37 @@ def main():
     labels = [f"Mentioned AI: {mentioned_ai_users}", f"Did Not Mention AI: {not_mentioned_ai_users}"]
     total = sum(sizes)
     legend_labels = [f"{label}: {size} ({size/total:.1%})" for label, size in zip(labels, sizes)]
+
     plt.figure(figsize=(10, 10))
-    wedges, _, autotexts =plt.pie(sizes, startangle=90, colors=[colors[4], colors[2]], autopct=make_autopct(sizes, threshold=3), pctdistance=0.75, textprops={"color": "black"}, wedgeprops={"alpha": 1})
-    plt.legend(wedges, legend_labels, loc="center left", bbox_to_anchor=(1, 0.5))
+
+    wedges, _, autotexts = plt.pie(
+        sizes,
+        startangle=90,
+        colors=[colors[4], colors[2]],
+        autopct=make_autopct(sizes, threshold=3),
+        pctdistance=0.75,
+        textprops={"color": "black", "fontsize": 14},
+        wedgeprops={"alpha": 1}
+    )
+
+    for autotext in autotexts:
+        autotext.set_fontsize(13)
+        autotext.set_weight("bold")
+
+    plt.legend(
+        wedges,
+        legend_labels,
+        loc="center left",
+        bbox_to_anchor=(1, 0.5),
+        fontsize=13
+    )
+
     plt.title("Users Mentioning AI Tools Usage in Commit Messages vs Not")
     plt.tight_layout()
-    plt.savefig("non_disabled_mentioned_ai_usage_pie_chart.png", dpi=300, bbox_inches="tight", pad_inches=0.2)
+    plt.savefig("mentioned_ai_usage_pie_chart.png", dpi=300, bbox_inches="tight", pad_inches=0.2)
     plt.show()
 
-    pd.DataFrame(category_summary).to_csv("non_disabled_ai_category_usage_summary.csv", index=False)
+    pd.DataFrame(category_summary).to_csv("ai_category_usage_summary.csv", index=False)
 
 if __name__ == "__main__":
     main()

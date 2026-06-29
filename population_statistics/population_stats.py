@@ -197,7 +197,8 @@ def create_nested_piechart(dist_df):
         radius=1.3,
         labels=outer_labels,
         colors=outer_colors,
-        labeldistance=1.05,
+        labeldistance=1.08,
+        textprops={"fontsize": 13},
         wedgeprops=dict(
             width=0.35,
             edgecolor="white"
@@ -210,7 +211,7 @@ def create_nested_piechart(dist_df):
         labels=inner_labels,
         colors=inner_colors,
         labeldistance=0.6,
-        textprops={"weight": "bold"},
+        textprops={"weight": "bold", "fontsize": 13},
         wedgeprops=dict(
             width=0.35,
             edgecolor="white"
@@ -218,7 +219,8 @@ def create_nested_piechart(dist_df):
     )
 
     plt.title(
-        f"Nested Distribution of Categories and Disabilities\n(Total Users = {nested_df['users'].sum()})"
+        f"Nested Distribution of Categories and Disabilities\n(Total Users = {nested_df['users'].sum()})",
+        fontsize=18
     )
 
     plt.tight_layout()
@@ -346,8 +348,13 @@ def main():
         autopct=autopct_func,
         startangle=90,
         colors=colors[:len(pie_df)],
-        wedgeprops={"alpha": 1}
+        wedgeprops={"alpha": 1},
+        textprops={"fontsize": 14},
+        pctdistance=0.72
     )
+    for autotext in autotexts:
+        autotext.set_fontsize(13)
+        autotext.set_weight("bold")
 
     legend_labels = [
         f"{row['keyword']} ({row['percentage']:.1f}%, {int(row['users'])} users)"
@@ -359,10 +366,12 @@ def main():
         legend_labels,
         title="Disability",
         loc="center left",
-        bbox_to_anchor=(1, 0.5)
+        bbox_to_anchor=(1, 0.5),
+        fontsize=12,
+        title_fontsize=13
     )
 
-    plt.title(f"Distribution of Disabilities (Total Users = {total_users})")
+    plt.title(f"Distribution of Disabilities (Total Users = {total_users})", fontsize=18)
     plt.tight_layout()
     plt.savefig("disability_distribution_pie_chart.png", dpi=300, bbox_inches="tight", pad_inches=0.2)
     plt.show()
